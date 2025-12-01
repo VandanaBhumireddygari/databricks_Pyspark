@@ -1,0 +1,86 @@
+Based on your query, here is a breakdown of the PySpark functions mentioned in the sources, organized by their primary purpose.
+
+| Function Category | PySpark Function | Key Usage / Result |
+| :--- | :--- | :--- |
+| **Setup & Utilities** | `DB utils.FS.LS("path")` | Lists files available in a specified path/container. |
+| | `%MD` | Magic command used to define Markdown (headings/comments) within Databricks notebooks. |
+| | `spark.SQL("query")` | Converts the result of a SQL query back into a Data Frame. |
+| | `df.createTempView("name")` | Converts a Data Frame into a temporary view, allowing SQL queries to be run against it. |
+| **Data Reading & Schema** | `spark.read` | The Data Frame Reader API. |
+| | `.format("csv" / "json")` | Specifies the file format to be read. |
+| | `.option("inferSchema", True)` | Automatically determines the best data type (schema) by inspecting records. |
+| | `.option("header", True)` | Treats the first row of a CSV file as the column header. |
+| | `.option("multi-line", False)` | Used when reading single-line JSON files. |
+| | `.load(URL)` | Executes the read operation using the provided file path. |
+| | `.schema(my_schema)` | Explicitly defines or overrides the schema using DDL or StructType definitions. |
+| | `df.printSchema()` | Displays the schema and data types of a Data Frame. |
+| | `StructType() / StructField()` | Methods used for detailed, manual schema definition. |
+| | `StringType()` | API used to define the string data type explicitly in schemas. |
+| | `df.createDataFrame(data, schema)` | Creates a Data Frame manually from defined data and schema. |
+| **Column Selection** | `df.select("col")` | Retrieves a subset of columns (same as SQL `SELECT`). |
+| | `col("name")` | The column object; standardized way to refer to columns. |
+| | `col().alias("new_name")` | Renames a column output (similar to SQL `AS`). |
+| **Column Modification** | `df.withColumnRenamed("old", "new")` | Changes a column's name permanently at the Data Frame level. |
+| | `df.withColumn("new_col", transformation)` | Creates a new column. |
+| | `df.withColumn("existing_col", transformation)` | Modifies the content of an existing column. |
+| | `lit("value")` | Must be used within `withColumn` to assign a constant value. |
+| | `regexp_replace(col, "old", "new")` | Replaces specified values within a string column. |
+| | `col().cast(DataType())` | Converts a column's data type (type casting). |
+| | `df.drop("col")` | Eliminates one or multiple columns from the Data Frame. |
+| **String & Array Functions** | `initcap(col)` | Converts the first letter of each word in a string to uppercase (like Excel's `proper` function). |
+| | `lower(col)` | Converts string content to lowercase. |
+| | `upper(col)` | Converts string content to uppercase. |
+| | `split(col, delimiter)` | Splits a string column into an array (list) based on a delimiter. |
+| | `explode(col)` | Converts elements of an array/list column into new rows. |
+| | `array_contains(col, "value")` | Checks if a specific value exists inside an array column, returning a Boolean flag. |
+| **Conditional Logic** | `when(condition).then(true_value)` | Starts a conditional statement (like SQL `CASE WHEN`). |
+| | `.otherwise(false_value)` | Specifies the default return value if no conditions are met. |
+| **Filtering (Slicing)** | `df.filter(condition)` / `df.where(condition)` | Performs row-level slicing. |
+| | `col().is in("v1", "v2")` | Filters records where a column value matches any value in a defined list. |
+| | `col().is null()` | Filters records where a specific column contains null values. |
+| **Ordering** | `df.sort("col")` / `df.orderBy("col")` | Arranges Data Frame records. |
+| | `.asc()` | Sorts the specified column in ascending order. |
+| | `.desc()` | Sorts the specified column in descending order. |
+| | `df.limit(n)` | Restricts the Data Frame to return only the first `n` rows. |
+| **Deduplication** | `df.dropDuplicates()` | Removes duplicate rows across all columns or a `subset`. |
+| | `df.distinct()` | Removes duplicate rows across all columns (same result as `dropDuplicates` without parameters). |
+| **Combining Data** | `df1.union(df2)` | Stacks two Data Frames vertically based on column order. |
+| | `df1.unionByName(df2)` | Stacks two Data Frames vertically by matching column names, regardless of order. |
+| **Joins** | `df1.join(df2, condition, "inner")` | Returns only matching records based on the condition. |
+| | `df1.join(df2, condition, "left")` | Returns all records from the left Data Frame plus matching records. |
+| | `df1.join(df2, condition, "right")` | Returns all records from the right Data Frame plus matching records. |
+| | `df1.join(df2, condition, "anti")` | Returns only records from the left Data Frame that have **no match** in the right Data Frame. |
+| **Date Functions** | `current_date()` | Returns the current system date. |
+| | `date_add(col, days)` | Adds a specified number of days to a date column. |
+| | `date_sub(col, days)` | Subtracts a specified number of days from a date column. |
+| | `date_diff(end_date, start_date)` | Calculates the interval between two dates in days. |
+| | `date_format(col, "format")` | Changes the display format of a date column (e.g., to DD/MM/YYYY). |
+| **Null Handling** | `df.drop na(how="any")` | Drops records if they have nulls in *any* column. |
+| | `df.drop na(how="all")` | Drops records only if they have nulls in *all* columns. |
+| | `df.drop na(subset=["col"])` | Drops records where nulls exist only in the specified column(s). |
+| | `df.fillna("value")` | Replaces null values in all columns with the provided value. |
+| | `df.fillna("value", subset=["col"])` | Replaces null values only in the specified column(s). |
+| **Aggregation** | `df.groupBy("col")` | Groups records based on distinct column values. |
+| | `.agg(function())` | Applies one or more aggregation functions after grouping. |
+| | `sum(col)` | Calculates the sum of a column. |
+| | `avg(col)` | Calculates the average of a column. |
+| | `collect_list(col)` | Aggregates all associated values into a list (array). |
+| | `.pivot("col")` | Creates a cross-tabulated output after grouping rows. |
+| **Window Functions** | `Window` (Import) | Required library import for defining window specifications. |
+| | `row_number()` | Generates a sequential, unique number (1, 2, 3...) for every record. |
+| | `rank()` | Assigns rank, skipping numbers after encountering duplicates. |
+| | `dense_rank()` | Assigns rank, continuing the numerical sequence after duplicates. |
+| | `.over(Window)` | Required clause for all window functions, defining the scope. |
+| | `Window.orderBy(col)` | Defines the ordering within the window partition. |
+| | `rowsBetween(start, end)` | Defines the Frame Clause for cumulative calculations. |
+| | `Window.unboundedPreceding` | Frame boundary to include all preceding rows. |
+| | `Window.currentRow` | Frame boundary to define the current row. |
+| | `Window.unboundedFollowing` | Frame boundary to include all following rows. |
+| **User Defined Functions** | `UDF()` | Registers a custom Python function to be used as a PySpark function. |
+| **Data Writing** | `df.write` | The Data Frame Writer API. |
+| | `.mode("append")` | Adds data to the existing file/location. |
+| | `.mode("overwrite")` | Deletes existing data and writes the new Data Frame. |
+| | `.mode("error")` | Throws an error if the target file/location already exists. |
+| | `.mode("ignore")` | Skips the write operation if the target file/location already exists. |
+| | `.save(location)` | Executes the write operation. |
+| | `.saveAsTable("name")` | Writes data and creates a managed table. |
